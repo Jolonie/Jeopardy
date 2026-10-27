@@ -148,7 +148,14 @@ document.querySelector('#export-logo').addEventListener('click',async()=>{
    if(!response.ok)throw new Error('Download-Version konnte nicht geladen werden.');
    root=new DOMParser().parseFromString(await response.text(),'text/html').documentElement;
   }
-  const img=root.querySelector('#cafe-logo');img.src=logoImage.src;img.hidden=false;
+  let logoData=logoImage.src;
+  if(!logoData.startsWith('data:')){
+   const response=await fetch(logoData);
+   if(!response.ok)throw new Error('Logo konnte nicht eingebettet werden.');
+   const blob=await response.blob();
+   logoData=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=reject;reader.readAsDataURL(blob)});
+  }
+  const img=root.querySelector('#cafe-logo');img.src=logoData;img.hidden=false;
   root.querySelector('#brand-text').hidden=true;
   root.querySelector('#app').replaceChildren();
   for(const id of ['question','team-manager'])root.querySelector('#'+id).replaceChildren();

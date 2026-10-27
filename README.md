@@ -2,7 +2,7 @@
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.8.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.9.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -78,3 +78,8 @@ Bestehende Teams behalten ihre Punkte, neue Teams starten mit 0 Punkten am Ende 
 ## Version 1.8: Original-Logo offline einbetten
 
 Unter „Café-Canapé-Logo einrichten“ das Original als JPG, PNG oder WebP (bis 5 MB) auswählen. Das Bild erscheint unverzerrt im Kopfbereich und wird separat vom Spielstand im Browser gespeichert. Spielabbruch entfernt das Logo nicht. „HTML mit Logo speichern“ erzeugt `Quizabend-Cafe-Canape.html` mit eingebetteten Bilddaten, ohne den aktuellen Spielstand zu exportieren. Diese Datei benötigt keinen Server und keine externe Bildquelle. Das Originalbild ist nicht Teil des Repositorys; es muss einmal lokal ausgewählt werden.
+
+
+## Version 1.9: Café-Canapé-Logo fest eingebunden
+
+Das für die dunkle Oberfläche freigestellte Logo liegt in `assets/cafe-canape-logo.png` und wird im Kopfbereich vollständig und proportional angezeigt. Die Downloadversion bettet die PNG-Daten direkt ein und funktioniert ohne externe Bildquelle oder manuellen Upload. Das Logo basiert auf der bereitgestellten Vorlage und wurde für einen transparenten Hintergrund aufbereitet. Ein eigenes Ersatzlogo kann weiterhin lokal ausgewählt werden.
