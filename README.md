@@ -2,7 +2,7 @@
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.9.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.10.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -83,3 +83,8 @@ Unter „Café-Canapé-Logo einrichten“ das Original als JPG, PNG oder WebP (b
 ## Version 1.9: Café-Canapé-Logo fest eingebunden
 
 Das für die dunkle Oberfläche freigestellte Logo liegt in `assets/cafe-canape-logo.png` und wird im Kopfbereich vollständig und proportional angezeigt. Die Downloadversion bettet die PNG-Daten direkt ein und funktioniert ohne externe Bildquelle oder manuellen Upload. Das Logo basiert auf der bereitgestellten Vorlage und wurde für einen transparenten Hintergrund aufbereitet. Ein eigenes Ersatzlogo kann weiterhin lokal ausgewählt werden.
+
+
+## Version 1.10
+
+Die eigene Logo-Auswahl samt Exportoberfläche wurde entfernt. Alte lokal gespeicherte Logos werden nicht mehr geladen; das fest eingebundene Logo wird immer angezeigt. Die Download-Datei enthält das Logo weiterhin offline.
