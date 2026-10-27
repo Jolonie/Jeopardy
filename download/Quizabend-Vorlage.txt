@@ -1,0 +1,109 @@
+Kategorie: Kategorie 1
+
+Punkte: 100
+Frage: Hier Frage 1 eingeben
+Antwort: Hier Lösung 1 eingeben
+
+Punkte: 200
+Frage: Hier Frage 2 eingeben
+Antwort: Hier Lösung 2 eingeben
+
+Punkte: 300
+Frage: Hier Frage 3 eingeben
+Antwort: Hier Lösung 3 eingeben
+
+Punkte: 400
+Frage: Hier Frage 4 eingeben
+Antwort: Hier Lösung 4 eingeben
+
+Punkte: 500
+Frage: Hier Frage 5 eingeben
+Antwort: Hier Lösung 5 eingeben
+
+Kategorie: Kategorie 2
+
+Punkte: 100
+Frage: Hier Frage 1 eingeben
+Antwort: Hier Lösung 1 eingeben
+
+Punkte: 200
+Frage: Hier Frage 2 eingeben
+Antwort: Hier Lösung 2 eingeben
+
+Punkte: 300
+Frage: Hier Frage 3 eingeben
+Antwort: Hier Lösung 3 eingeben
+
+Punkte: 400
+Frage: Hier Frage 4 eingeben
+Antwort: Hier Lösung 4 eingeben
+
+Punkte: 500
+Frage: Hier Frage 5 eingeben
+Antwort: Hier Lösung 5 eingeben
+
+Kategorie: Kategorie 3
+
+Punkte: 100
+Frage: Hier Frage 1 eingeben
+Antwort: Hier Lösung 1 eingeben
+
+Punkte: 200
+Frage: Hier Frage 2 eingeben
+Antwort: Hier Lösung 2 eingeben
+
+Punkte: 300
+Frage: Hier Frage 3 eingeben
+Antwort: Hier Lösung 3 eingeben
+
+Punkte: 400
+Frage: Hier Frage 4 eingeben
+Antwort: Hier Lösung 4 eingeben
+
+Punkte: 500
+Frage: Hier Frage 5 eingeben
+Antwort: Hier Lösung 5 eingeben
+
+Kategorie: Kategorie 4
+
+Punkte: 100
+Frage: Hier Frage 1 eingeben
+Antwort: Hier Lösung 1 eingeben
+
+Punkte: 200
+Frage: Hier Frage 2 eingeben
+Antwort: Hier Lösung 2 eingeben
+
+Punkte: 300
+Frage: Hier Frage 3 eingeben
+Antwort: Hier Lösung 3 eingeben
+
+Punkte: 400
+Frage: Hier Frage 4 eingeben
+Antwort: Hier Lösung 4 eingeben
+
+Punkte: 500
+Frage: Hier Frage 5 eingeben
+Antwort: Hier Lösung 5 eingeben
+
+Kategorie: Kategorie 5
+
+Punkte: 100
+Frage: Hier Frage 1 eingeben
+Antwort: Hier Lösung 1 eingeben
+
+Punkte: 200
+Frage: Hier Frage 2 eingeben
+Antwort: Hier Lösung 2 eingeben
+
+Punkte: 300
+Frage: Hier Frage 3 eingeben
+Antwort: Hier Lösung 3 eingeben
+
+Punkte: 400
+Frage: Hier Frage 4 eingeben
+Antwort: Hier Lösung 4 eingeben
+
+Punkte: 500
+Frage: Hier Frage 5 eingeben
+Antwort: Hier Lösung 5 eingeben

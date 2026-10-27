@@ -1,0 +1,68 @@
+# Quizabend
+
+## Direkt herunterladen
+
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.6.html)
+- [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
+- [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
+
+Die gewünschte Datei auf GitHub öffnen und über „Download raw file“ herunterladen. Die HTML-Datei anschließend im Browser öffnen; keine Installation erforderlich.
+
+Deutschsprachiges Jeopardy-Spiel für eine Spielleitung und beliebig viele Teams (zehn sind voreingestellt). Benötigt Python 3 zum lokalen Bereitstellen; Node.js ab Version 18 für Tests. Keine Paketinstallation nötig.
+
+## Start
+
+Im Repository `npm start` ausführen. Der Webserver läuft auf Port 3000. Alternativ: `python3 -m http.server 3000 --bind 0.0.0.0`.
+
+1. Fünf Kategorien und jeweils fünf Fragen mit Lösungen eingeben. Die Stufen bringen 100, 200, 300, 400 und 500 Punkte.
+2. Teamnamen erfassen und das Spiel starten.
+3. Frage wählen, antwortendes Team auswählen und richtig oder falsch bewerten. Richtige Antworten addieren Punkte, falsche ziehen die Hälfte des Fragewerts ab; die Frage wird geschlossen.
+4. Punkte jederzeit mit einer positiven oder negativen ganzen Zahl korrigieren. Die letzte Punkteänderung lässt sich rückgängig machen; dabei wird eine bewertete Frage wieder freigegeben.
+
+Die Spielleitung bedient einen Browser. Teams benötigen weder Account noch eigenes Gerät. Dies ist keine Mehrbenutzer-Anwendung mit Anmeldung oder Zugriffskontrolle. Lösungen erst auf dem Leitungsbildschirm aufdecken. Nicht parallel in mehreren Tabs spielen.
+
+Fragen, Teams und Spielstand werden automatisch im lokalen Browser-Speicher gespeichert und beim erneuten Öffnen wiederhergestellt. Es gibt keine serverseitige Speicherung oder Synchronisierung. „Neu beginnen“ löscht den lokalen Spielstand nach Bestätigung.
+
+## Prüfung
+
+`npm test` prüft Punkteberechnung und Startvalidierung.
+
+## TXT-Import und Download-Version
+
+In der Fragenvorbereitung „TXT-Vorlage herunterladen“ wählen. Alternativ liegt die Vorlage in `download/Quizabend-Vorlage.txt`. Platzhalter durch eigene Inhalte ersetzen und als UTF-8-TXT speichern. Anschließend die Datei auswählen oder ihren gesamten Text in das Importfeld einfügen. Vorhandene Fragen werden nur nach Bestätigung ersetzt; ungültige Importe verändern sie nicht.
+
+Format (für alle fünf Kategorien mit jeweils 100, 200, 300, 400 und 500 Punkten wiederholen):
+
+```text
+Kategorie: Allgemeinwissen
+
+Punkte: 100
+Frage: Wie heißt die Hauptstadt von Frankreich?
+Antwort: Paris
+```
+
+Jede Angabe steht in einer eigenen Zeile. Alle 25 Fragen und Antworten sind erforderlich. Bei Fehlern zeigt die Oberfläche einen Hinweis an.
+
+`npm run build` erzeugt die eigenständige `download/Quizabend.html` und die vollständige TXT-Vorlage neu. Die HTML-Datei kann ohne Webserver direkt im Browser geöffnet werden. Falsche Antworten kosten 50, 100, 150, 200 oder 250 Punkte; richtige bringen den vollen Fragewert. Bereits gespeicherte Punktestände werden nicht rückwirkend verändert.
+
+## Punktekorrektur, weitere Boards und Spielende
+
+Die Punktekorrektur hat drei Optionen: „Punkte hinzufügen (+/−)“, „Punkte abziehen“ und „Punktestand setzen“. Zahl eingeben und „Übernehmen“ klicken. Negative Werte inklusive des Minuszeichens „−“ werden unterstützt. Fehler werden direkt im Formular angezeigt.
+
+Nach der Bewertung aller 25 Fragen erscheint die Auswahl „Neues Board vorbereiten“ oder „Spiel beenden & Sieger anzeigen“. Ein neues Board öffnet wieder die leere Frageneingabe inklusive TXT-Upload. Teams und Gesamtpunkte bleiben erhalten. Board 1 zählt 100–500 Punkte, alle folgenden Boards zählen 200–1.000 Punkte. Im TXT-Format bleiben die Stufen immer 100–500; die Anwendung verdoppelt sie automatisch. Falsche Antworten kosten stets die Hälfte des angezeigten Fragewerts.
+
+Mit dem neuen Board beginnt ein neuer Undo-Verlauf, damit alte Fragen nicht in das neue Board zurückgeschrieben werden. Auf dem Siegerbildschirm stehen alle Teams nach Punktestand sortiert, bei Gleichstand gibt es mehrere Sieger. Von dort ist die Rückkehr zum letzten Board für Korrekturen möglich; anschließend „Spiel beenden“ erneut wählen. Der neue Stand wird dann für die Siegeranzeige verwendet. Weitere Boards lassen sich ebenfalls starten.
+
+## Version 1.4: Teamrotation und direkte Punktekorrektur
+
+Auf dem Board wird das aktive Team angezeigt. Jede Frage wählt dieses Team automatisch vor, die Auswahlliste bleibt änderbar. Erst die Bewertung schaltet die feste Reihenfolge um einen Platz weiter; eine abweichende Teamauswahl gilt nur für diese Frage. Schließen ohne Bewertung schaltet nicht weiter. Undo einer Bewertung stellt den vorherigen Zug wieder her. Die Reihenfolge läuft über Boardgrenzen hinweg weiter und bleibt beim Neuladen erhalten. Manuelle Punktekorrekturen ändern die Teamreihenfolge nicht.
+
+Punktekorrekturen werden direkt über „Übernehmen“ oder Enter verarbeitet. Eine Bestätigung an der Teamkarte zeigt den vorherigen und neuen Wert, ohne die Seite neu aufzubauen. Ungültige oder leere Eingaben zeigen einen Fehler direkt an der Karte. Die eigenständige Version liegt zusätzlich unter `download/Quizabend-v1.4.html`, um sie eindeutig von älteren Downloads unterscheiden zu können.
+
+## Version 1.5: Spiel abbrechen
+
+„Spiel abbrechen“ öffnet einen Bestätigungsdialog innerhalb der Anwendung, auch bei geöffneter Frage. „Weiterspielen“ oder Escape erhält das Spiel unverändert. Erst „Ja, Spiel abbrechen“ löscht das komplette Spiel, schließt offene Fragen und kehrt zur leeren Fragenvorbereitung mit zehn Standardteams zurück. Der zurückgesetzte Zustand wird gespeichert. Aktueller Download: `download/Quizabend-v1.5.html`.
+
+## Version 1.6: Board für Tests überspringen
+
+Unter einem laufenden Board schließt „Board überspringen (Test)“ alle offenen Fragen ohne Punktevergabe. Übersprungene Felder sind mit einem Strich markiert. Teamstände und Teamrotation bleiben unverändert. Danach stehen wie bei einem regulär abgeschlossenen Board „Neues Board vorbereiten“ und „Spiel beenden & Sieger anzeigen“ bereit. Der Abschluss wird gespeichert und übersteht das Neuladen. Aktueller Download: `download/Quizabend-v1.6.html`.

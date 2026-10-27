@@ -1,0 +1,109 @@
+Kategorie: Geografie
+
+Punkte: 100
+Frage: Wie heißt die Hauptstadt von Frankreich?
+Antwort: Paris
+
+Punkte: 200
+Frage: Auf welchem Kontinent liegt Brasilien?
+Antwort: Südamerika
+
+Punkte: 300
+Frage: Welcher Ozean ist der größte der Erde?
+Antwort: Der Pazifische Ozean
+
+Punkte: 400
+Frage: Wie heißt die Hauptstadt von Kanada?
+Antwort: Ottawa
+
+Punkte: 500
+Frage: Welches Land umschließt Lesotho vollständig?
+Antwort: Südafrika
+
+Kategorie: Natur & Wissenschaft
+
+Punkte: 100
+Frage: Wie viele Beine hat eine Spinne?
+Antwort: Acht
+
+Punkte: 200
+Frage: Welches chemische Symbol steht für Sauerstoff?
+Antwort: O
+
+Punkte: 300
+Frage: Welcher Planet ist für sein besonders auffälliges Ringsystem bekannt?
+Antwort: Saturn
+
+Punkte: 400
+Frage: Wie heißt der Prozess, durch den Pflanzen Lichtenergie in chemische Energie umwandeln?
+Antwort: Fotosynthese
+
+Punkte: 500
+Frage: Welche SI-Einheit wird für den elektrischen Widerstand verwendet?
+Antwort: Ohm
+
+Kategorie: Geschichte
+
+Punkte: 100
+Frage: In welchem Jahr fiel die Berliner Mauer?
+Antwort: 1989
+
+Punkte: 200
+Frage: Welches antike Volk ließ das Kolosseum in Rom erbauen?
+Antwort: Die Römer
+
+Punkte: 300
+Frage: Wer betrat 1969 als erster Mensch den Mond?
+Antwort: Neil Armstrong
+
+Punkte: 400
+Frage: In welchem Jahr begann die Französische Revolution?
+Antwort: 1789
+
+Punkte: 500
+Frage: Wie heißt der Friedensschluss von 1648, der den Dreißigjährigen Krieg beendete?
+Antwort: Der Westfälische Frieden
+
+Kategorie: Kultur & Unterhaltung
+
+Punkte: 100
+Frage: Wie heißt der Zauberlehrling mit der blitzförmigen Narbe auf der Stirn?
+Antwort: Harry Potter
+
+Punkte: 200
+Frage: Welche Band veröffentlichte das Lied „Yellow Submarine“?
+Antwort: The Beatles
+
+Punkte: 300
+Frage: Wer malte die Mona Lisa?
+Antwort: Leonardo da Vinci
+
+Punkte: 400
+Frage: Wer schrieb das Drama „Faust. Der Tragödie erster Teil“?
+Antwort: Johann Wolfgang von Goethe
+
+Punkte: 500
+Frage: Welcher Komponist schrieb die Oper „Die Zauberflöte“?
+Antwort: Wolfgang Amadeus Mozart
+
+Kategorie: Sport & Spiel
+
+Punkte: 100
+Frage: Wie viele Spieler einer Fußballmannschaft stehen zu Spielbeginn auf dem Feld?
+Antwort: Elf
+
+Punkte: 200
+Frage: In welcher Sportart wird das Turnier Wimbledon ausgetragen?
+Antwort: Tennis
+
+Punkte: 300
+Frage: Wie viele Felder hat ein Schachbrett?
+Antwort: 64
+
+Punkte: 400
+Frage: Wie lang ist die offizielle Marathonstrecke in Kilometern?
+Antwort: 42,195 Kilometer
+
+Punkte: 500
+Frage: Welche drei Disziplinen gehören zum olympischen Triathlon?
+Antwort: Schwimmen, Radfahren und Laufen
