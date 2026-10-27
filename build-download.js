@@ -9,5 +9,5 @@ const html = read('index.html')
   .replace('<script type="module" src="app.js"></script>', () => `<script>${game}\n${app}</script>`);
 mkdirSync(new URL('download/', root), {recursive:true});
 writeFileSync(new URL('download/Quizabend.html', root), html);
-writeFileSync(new URL('download/Quizabend-v1.7.html', root), html);
+writeFileSync(new URL('download/Quizabend-v1.8.html', root), html);
 writeFileSync(new URL('download/Quizabend-Vorlage.txt', root), quizTemplate());

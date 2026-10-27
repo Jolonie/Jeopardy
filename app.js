@@ -116,3 +116,46 @@ app.addEventListener('change',async e=>{
  try{importQuiz(await file.text())}catch{document.querySelector('#import-error').textContent='Datei konnte nicht gelesen werden. Bitte als UTF-8-TXT speichern.'}
  e.target.value='';
 });
+
+// Keep the original HTML so exporting never includes a running game's state.
+const logoTemplate=document.documentElement.cloneNode(true);
+const logoImage=document.querySelector('#cafe-logo');
+const logoStatus=document.querySelector('#logo-status');
+function showLogo(data){
+ if(!/^data:image\/(png|jpeg|webp);base64,/.test(data))return;
+ logoImage.src=data;logoImage.hidden=false;document.querySelector('#brand-text').hidden=true;
+}
+try{showLogo(localStorage.getItem('quizabend-cafe-logo')||logoImage.getAttribute('src')||'')}catch{showLogo(logoImage.getAttribute('src')||'')}
+document.querySelector('#logo-file').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Bitte ein JPG-, PNG- oder WebP-Bild auswählen.');
+  if(file.size>5*1024*1024)throw new Error('Bitte ein Bild bis maximal 5 MB auswählen.');
+  const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Bild konnte nicht gelesen werden.'));reader.readAsDataURL(file)});
+  const probe=new Image();probe.src=data;await probe.decode();
+  showLogo(data);
+  try{localStorage.setItem('quizabend-cafe-logo',data);logoStatus.textContent='Logo eingebunden. Du kannst jetzt die HTML-Datei mit Logo speichern.'}
+  catch{logoStatus.textContent='Logo eingebunden. Der Browser-Speicher ist voll; bitte jetzt die HTML-Datei mit Logo speichern.'}
+ }catch(err){logoStatus.textContent=err.message}
+ e.target.value='';
+});
+document.querySelector('#export-logo').addEventListener('click',async()=>{
+ try{
+  if(logoImage.hidden)throw new Error('Bitte zuerst dein Logo auswählen.');
+  let root=logoTemplate.cloneNode(true);
+  if(root.querySelector('script[src]')){
+   const response=await fetch('./download/Quizabend.html');
+   if(!response.ok)throw new Error('Download-Version konnte nicht geladen werden.');
+   root=new DOMParser().parseFromString(await response.text(),'text/html').documentElement;
+  }
+  const img=root.querySelector('#cafe-logo');img.src=logoImage.src;img.hidden=false;
+  root.querySelector('#brand-text').hidden=true;
+  root.querySelector('#app').replaceChildren();
+  for(const id of ['question','team-manager'])root.querySelector('#'+id).replaceChildren();
+  for(const el of root.querySelectorAll('dialog,details'))el.removeAttribute('open');
+  root.querySelector('#notice').textContent='';root.querySelector('#logo-status').textContent='';
+  const url=URL.createObjectURL(new Blob(['<!doctype html>\n'+root.outerHTML],{type:'text/html;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='Quizabend-Cafe-Canape.html';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  logoStatus.textContent='HTML-Datei mit eingebettetem Logo gespeichert. Sie funktioniert auch offline.';
+ }catch(err){logoStatus.textContent=err.message}
+});

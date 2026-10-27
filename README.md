@@ -2,7 +2,7 @@
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.7.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.8.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -73,3 +73,8 @@ Unter einem laufenden Board schließt „Board überspringen (Test)“ alle offe
 Nach einem gespielten oder übersprungenen Board steht „Teams verwalten“ zur Verfügung. Im Dialog lassen sich Teams hinzufügen, entfernen und umbenennen. „Änderungen speichern“ übernimmt die neue Besetzung; „Abbrechen“ oder Escape verwirft den Entwurf. Mindestens zwei Teams mit eindeutigen, nicht leeren Namen sind erforderlich.
 
 Bestehende Teams behalten ihre Punkte, neue Teams starten mit 0 Punkten am Ende der Reihenfolge. Wird das nächste aktive Team entfernt, übernimmt das nächste verbleibende Team seinen Zug. Entfernte Teams werden aus der Siegerwertung genommen. Bei Änderungen wird der bisherige Undo-Verlauf abgeschlossen, damit frühere Bewertungen nicht auf andere Teams angewendet werden. Die Besetzung wird lokal gespeichert und beim nächsten Board sowie im Siegerbildschirm verwendet. Aktueller Download: `download/Quizabend-v1.7.html`.
+
+
+## Version 1.8: Original-Logo offline einbetten
+
+Unter „Café-Canapé-Logo einrichten“ das Original als JPG, PNG oder WebP (bis 5 MB) auswählen. Das Bild erscheint unverzerrt im Kopfbereich und wird separat vom Spielstand im Browser gespeichert. Spielabbruch entfernt das Logo nicht. „HTML mit Logo speichern“ erzeugt `Quizabend-Cafe-Canape.html` mit eingebetteten Bilddaten, ohne den aktuellen Spielstand zu exportieren. Diese Datei benötigt keinen Server und keine externe Bildquelle. Das Originalbild ist nicht Teil des Repositorys; es muss einmal lokal ausgewählt werden.

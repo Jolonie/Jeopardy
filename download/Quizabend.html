@@ -4,8 +4,10 @@
 .scorecard form{display:grid;gap:10px}.scorecard label{min-width:0}.scorecard input{margin-top:7px}.score-error{color:#ffb8c3;font-size:13px}.winner{text-align:center;padding:32px 0 48px}.trophy{font-size:80px}.winner h2{color:var(--accent);font-size:32px;overflow-wrap:anywhere}.ranking{padding:0;list-style:none}.ranking li{display:flex;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid #343443}.ranking li:first-child{color:var(--accent)}
 
 .turn-indicator{background:#252e20;border:1px solid #6c8443;border-radius:12px;padding:16px;color:var(--accent)}.turn-indicator span{color:var(--muted);font-size:13px}.current-team{border-color:var(--accent)}.score-error{overflow-wrap:anywhere}
+
+.brand{display:flex;align-items:center;min-width:0}.brand img{width:180px;height:76px;object-fit:contain}.brand img[hidden]{display:none}.logo-settings{margin:20px 5vw 0;max-width:800px;color:var(--muted)}.logo-settings summary{cursor:pointer;font-size:13px}.logo-settings input{max-width:450px}.logo-settings .actions{margin:16px 0}@media(max-width:600px){.brand img{width:135px;height:65px}header #reset{font-size:12px;padding:10px}}
 </style></head>
-<body><header><a href="./" class="brand">QUIZ<span>ABEND</span></a><span class="tag">Version 1.7 · Quizabend</span><button id="reset" class="quiet">Spiel abbrechen</button></header><main id="app"></main><dialog id="question"></dialog><dialog id="team-manager" aria-labelledby="team-manager-title"></dialog><dialog id="abort-game" aria-labelledby="abort-title" aria-describedby="abort-description"><h2 id="abort-title">Komplettes Spiel abbrechen?</h2><p id="abort-description">Alle Kategorien, Fragen, Teams und Punkte dieses Spiels werden gelöscht. Du kehrst zur Startseite zurück.</p><div class="actions"><button type="button" id="keep-playing" class="quiet" autofocus>Weiterspielen</button><button type="button" id="confirm-abort" class="danger">Ja, Spiel abbrechen</button></div></dialog><div id="notice" role="status" aria-live="polite"></div><script>function answerPoints(value, correct) {
+<body><header><div class="brand"><img id="cafe-logo" alt="Café Canapé – 1. Studentenkneipe in Halberstadt" hidden><span id="brand-text">QUIZABEND</span></div><span class="tag">Version 1.8 · Quizabend</span><button id="reset" class="quiet">Spiel abbrechen</button></header><details class="logo-settings"><summary>Café-Canapé-Logo einrichten</summary><p>Originalbild auswählen. Es erscheint vollständig im Kopfbereich und bleibt in diesem Browser gespeichert. Mit „HTML mit Logo speichern“ erhältst du eine eigenständige Datei inklusive Logo.</p><label>Logo als JPG, PNG oder WebP<input id="logo-file" type="file" accept="image/jpeg,image/png,image/webp"></label><div class="actions"><button type="button" id="export-logo">HTML mit Logo speichern</button></div><p id="logo-status" role="status"></p></details><main id="app"></main><dialog id="question"></dialog><dialog id="team-manager" aria-labelledby="team-manager-title"></dialog><dialog id="abort-game" aria-labelledby="abort-title" aria-describedby="abort-description"><h2 id="abort-title">Komplettes Spiel abbrechen?</h2><p id="abort-description">Alle Kategorien, Fragen, Teams und Punkte dieses Spiels werden gelöscht. Du kehrst zur Startseite zurück.</p><div class="actions"><button type="button" id="keep-playing" class="quiet" autofocus>Weiterspielen</button><button type="button" id="confirm-abort" class="danger">Ja, Spiel abbrechen</button></div></dialog><div id="notice" role="status" aria-live="polite"></div><script>function answerPoints(value, correct) {
   return correct ? value : -value / 2;
 }
 
@@ -238,5 +240,48 @@ app.addEventListener('change',async e=>{
  const file=e.target.files[0];if(!file)return;
  try{importQuiz(await file.text())}catch{document.querySelector('#import-error').textContent='Datei konnte nicht gelesen werden. Bitte als UTF-8-TXT speichern.'}
  e.target.value='';
+});
+
+// Keep the original HTML so exporting never includes a running game's state.
+const logoTemplate=document.documentElement.cloneNode(true);
+const logoImage=document.querySelector('#cafe-logo');
+const logoStatus=document.querySelector('#logo-status');
+function showLogo(data){
+ if(!/^data:image\/(png|jpeg|webp);base64,/.test(data))return;
+ logoImage.src=data;logoImage.hidden=false;document.querySelector('#brand-text').hidden=true;
+}
+try{showLogo(localStorage.getItem('quizabend-cafe-logo')||logoImage.getAttribute('src')||'')}catch{showLogo(logoImage.getAttribute('src')||'')}
+document.querySelector('#logo-file').addEventListener('change',async e=>{
+ const file=e.target.files[0];if(!file)return;
+ try{
+  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('Bitte ein JPG-, PNG- oder WebP-Bild auswählen.');
+  if(file.size>5*1024*1024)throw new Error('Bitte ein Bild bis maximal 5 MB auswählen.');
+  const data=await new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(reader.result);reader.onerror=()=>reject(new Error('Bild konnte nicht gelesen werden.'));reader.readAsDataURL(file)});
+  const probe=new Image();probe.src=data;await probe.decode();
+  showLogo(data);
+  try{localStorage.setItem('quizabend-cafe-logo',data);logoStatus.textContent='Logo eingebunden. Du kannst jetzt die HTML-Datei mit Logo speichern.'}
+  catch{logoStatus.textContent='Logo eingebunden. Der Browser-Speicher ist voll; bitte jetzt die HTML-Datei mit Logo speichern.'}
+ }catch(err){logoStatus.textContent=err.message}
+ e.target.value='';
+});
+document.querySelector('#export-logo').addEventListener('click',async()=>{
+ try{
+  if(logoImage.hidden)throw new Error('Bitte zuerst dein Logo auswählen.');
+  let root=logoTemplate.cloneNode(true);
+  if(root.querySelector('script[src]')){
+   const response=await fetch('./download/Quizabend.html');
+   if(!response.ok)throw new Error('Download-Version konnte nicht geladen werden.');
+   root=new DOMParser().parseFromString(await response.text(),'text/html').documentElement;
+  }
+  const img=root.querySelector('#cafe-logo');img.src=logoImage.src;img.hidden=false;
+  root.querySelector('#brand-text').hidden=true;
+  root.querySelector('#app').replaceChildren();
+  for(const id of ['question','team-manager'])root.querySelector('#'+id).replaceChildren();
+  for(const el of root.querySelectorAll('dialog,details'))el.removeAttribute('open');
+  root.querySelector('#notice').textContent='';root.querySelector('#logo-status').textContent='';
+  const url=URL.createObjectURL(new Blob(['<!doctype html>\n'+root.outerHTML],{type:'text/html;charset=utf-8'}));
+  const link=document.createElement('a');link.href=url;link.download='Quizabend-Cafe-Canape.html';link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
+  logoStatus.textContent='HTML-Datei mit eingebettetem Logo gespeichert. Sie funktioniert auch offline.';
+ }catch(err){logoStatus.textContent=err.message}
 });
 </script></body></html>

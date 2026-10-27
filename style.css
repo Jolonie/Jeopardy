@@ -3,3 +3,5 @@
 .scorecard form{display:grid;gap:10px}.scorecard label{min-width:0}.scorecard input{margin-top:7px}.score-error{color:#ffb8c3;font-size:13px}.winner{text-align:center;padding:32px 0 48px}.trophy{font-size:80px}.winner h2{color:var(--accent);font-size:32px;overflow-wrap:anywhere}.ranking{padding:0;list-style:none}.ranking li{display:flex;justify-content:space-between;gap:20px;padding:18px 0;border-bottom:1px solid #343443}.ranking li:first-child{color:var(--accent)}
 
 .turn-indicator{background:#252e20;border:1px solid #6c8443;border-radius:12px;padding:16px;color:var(--accent)}.turn-indicator span{color:var(--muted);font-size:13px}.current-team{border-color:var(--accent)}.score-error{overflow-wrap:anywhere}
+
+.brand{display:flex;align-items:center;min-width:0}.brand img{width:180px;height:76px;object-fit:contain}.brand img[hidden]{display:none}.logo-settings{margin:20px 5vw 0;max-width:800px;color:var(--muted)}.logo-settings summary{cursor:pointer;font-size:13px}.logo-settings input{max-width:450px}.logo-settings .actions{margin:16px 0}@media(max-width:600px){.brand img{width:135px;height:65px}header #reset{font-size:12px;padding:10px}}
