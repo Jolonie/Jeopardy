@@ -17,6 +17,27 @@ export function skipBoard(state) {
   }
 }
 
+export function applyTeamChanges(state, entries) {
+  if (state.phase !== 'game' || state.categories.some(c => c.questions.some(q => !q.used))) throw new Error('Teams können erst nach Abschluss des Boards geändert werden.');
+  if (entries.length < 2) throw new Error('Mindestens zwei Teams müssen im Spiel bleiben.');
+  const names = entries.map(t => t.name.trim());
+  if (names.some(name => !name)) throw new Error('Bitte für jedes Team einen Namen eingeben.');
+  if (new Set(names.map(name => name.toLowerCase())).size !== names.length) throw new Error('Teamnamen müssen eindeutig sein.');
+  const sources = entries.filter(t => t.source !== undefined).map(t => t.source);
+  if (new Set(sources).size !== sources.length || sources.some(i => !Number.isInteger(i) || !state.teams[i])) throw new Error('Ungültige Teamzuordnung. Bitte die Teamverwaltung erneut öffnen.');
+  const teams = entries.map((t,i) => ({name:names[i],score:t.source === undefined ? 0 : state.teams[t.source].score}));
+  let turn = 0;
+  for (let offset = 0; offset < state.teams.length; offset++) {
+    const next = ((state.turn || 0) + offset) % state.teams.length;
+    const index = entries.findIndex(t => t.source === next);
+    if (index !== -1) { turn = index; break; }
+  }
+  const changed = entries.length !== state.teams.length || entries.some((t,i) => t.source !== i || names[i] !== state.teams[i].name);
+  if (changed) state.history = [];
+  state.teams = teams;
+  state.turn = turn;
+}
+
 export function correctionDelta(score, input, mode) {
   const text = String(input).trim().replaceAll('−', '-');
   if (!/^[+-]?\d+$/.test(text)) throw new Error('Bitte eine ganze Zahl eingeben, z. B. 100 oder −100.');

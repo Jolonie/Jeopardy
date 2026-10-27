@@ -2,7 +2,7 @@
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.6.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.7.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -66,3 +66,10 @@ Punktekorrekturen werden direkt über „Übernehmen“ oder Enter verarbeitet. 
 ## Version 1.6: Board für Tests überspringen
 
 Unter einem laufenden Board schließt „Board überspringen (Test)“ alle offenen Fragen ohne Punktevergabe. Übersprungene Felder sind mit einem Strich markiert. Teamstände und Teamrotation bleiben unverändert. Danach stehen wie bei einem regulär abgeschlossenen Board „Neues Board vorbereiten“ und „Spiel beenden & Sieger anzeigen“ bereit. Der Abschluss wird gespeichert und übersteht das Neuladen. Aktueller Download: `download/Quizabend-v1.6.html`.
+
+
+## Version 1.7: Teams nach einem Board ändern
+
+Nach einem gespielten oder übersprungenen Board steht „Teams verwalten“ zur Verfügung. Im Dialog lassen sich Teams hinzufügen, entfernen und umbenennen. „Änderungen speichern“ übernimmt die neue Besetzung; „Abbrechen“ oder Escape verwirft den Entwurf. Mindestens zwei Teams mit eindeutigen, nicht leeren Namen sind erforderlich.
+
+Bestehende Teams behalten ihre Punkte, neue Teams starten mit 0 Punkten am Ende der Reihenfolge. Wird das nächste aktive Team entfernt, übernimmt das nächste verbleibende Team seinen Zug. Entfernte Teams werden aus der Siegerwertung genommen. Bei Änderungen wird der bisherige Undo-Verlauf abgeschlossen, damit frühere Bewertungen nicht auf andere Teams angewendet werden. Die Besetzung wird lokal gespeichert und beim nächsten Board sowie im Siegerbildschirm verwendet. Aktueller Download: `download/Quizabend-v1.7.html`.

@@ -1,6 +1,36 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {adjustScore,validateSetup,answerPoints,parseQuiz,quizTemplate,correctionDelta,nextRound,standings,advanceTurn,skipBoard} from '../game.js';
+import {adjustScore,validateSetup,answerPoints,parseQuiz,quizTemplate,correctionDelta,nextRound,standings,advanceTurn,skipBoard,applyTeamChanges} from '../game.js';
+const completedState=()=>{
+  const state={phase:'game',categories:parseQuiz(quizTemplate()),teams:[{name:'A',score:500},{name:'B',score:-100},{name:'C',score:900}],turn:1,history:[{team:2,previous:0}]};
+  skipBoard(state);return state;
+};
+test('Teamänderungen behalten Scores und nächsten Zug, neue Teams starten bei null',()=>{
+  const state=completedState();
+  applyTeamChanges(state,[{source:1,name:'B'},{source:2,name:'C'},{name:'Neu',score:9999}]);
+  assert.deepEqual(state.teams,[{name:'B',score:-100},{name:'C',score:900},{name:'Neu',score:0}]);
+  assert.equal(state.turn,0);assert.deepEqual(state.history,[]);
+  nextRound(state);assert.equal(state.teams[1].score,900);
+});
+test('Entfernen des aktiven Teams wählt den nächsten verbleibenden Zug',()=>{
+  const state=completedState();
+  applyTeamChanges(state,[{source:0,name:'A'},{source:2,name:'C'}]);
+  assert.equal(state.turn,1);
+  state.turn=1;applyTeamChanges(state,[{source:0,name:'A'},{name:'Neu'}]);assert.equal(state.turn,0);
+});
+test('ungültige Teamänderungen verändern den Zustand nicht',()=>{
+  const state=completedState(),before=structuredClone(state);
+  for(const draft of [[{source:0,name:'A'}],[{name:'A'},{name:' a '}],[{name:''},{name:'B'}],[{source:99,name:'A'},{name:'B'}],[{source:0,name:'A'},{source:0,name:'B'}]]){
+    assert.throws(()=>applyTeamChanges(state,draft));assert.deepEqual(state,before);
+  }
+  state.categories[0].questions[0].used=false;
+  assert.throws(()=>applyTeamChanges(state,[{source:0,name:'A'},{source:1,name:'B'}]),/Abschluss/);
+});
+test('Speichern ohne Änderungen bewahrt den Undo-Verlauf',()=>{
+  const state=completedState();
+  applyTeamChanges(state,state.teams.map((t,source)=>({...t,source})));
+  assert.equal(state.history.length,1);assert.equal(state.turn,1);
+});
 test('Board überspringen schließt offene Fragen ohne Punkte oder Zug zu ändern',()=>{
   const state={categories:parseQuiz(quizTemplate()),teams:[{name:'A',score:450}],turn:0,history:[]};
   state.categories[0].questions[0].used=true;

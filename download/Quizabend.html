@@ -5,7 +5,7 @@
 
 .turn-indicator{background:#252e20;border:1px solid #6c8443;border-radius:12px;padding:16px;color:var(--accent)}.turn-indicator span{color:var(--muted);font-size:13px}.current-team{border-color:var(--accent)}.score-error{overflow-wrap:anywhere}
 </style></head>
-<body><header><a href="./" class="brand">QUIZ<span>ABEND</span></a><span class="tag">Version 1.6 · Quizabend</span><button id="reset" class="quiet">Spiel abbrechen</button></header><main id="app"></main><dialog id="question"></dialog><dialog id="abort-game" aria-labelledby="abort-title" aria-describedby="abort-description"><h2 id="abort-title">Komplettes Spiel abbrechen?</h2><p id="abort-description">Alle Kategorien, Fragen, Teams und Punkte dieses Spiels werden gelöscht. Du kehrst zur Startseite zurück.</p><div class="actions"><button type="button" id="keep-playing" class="quiet" autofocus>Weiterspielen</button><button type="button" id="confirm-abort" class="danger">Ja, Spiel abbrechen</button></div></dialog><div id="notice" role="status" aria-live="polite"></div><script>function answerPoints(value, correct) {
+<body><header><a href="./" class="brand">QUIZ<span>ABEND</span></a><span class="tag">Version 1.7 · Quizabend</span><button id="reset" class="quiet">Spiel abbrechen</button></header><main id="app"></main><dialog id="question"></dialog><dialog id="team-manager" aria-labelledby="team-manager-title"></dialog><dialog id="abort-game" aria-labelledby="abort-title" aria-describedby="abort-description"><h2 id="abort-title">Komplettes Spiel abbrechen?</h2><p id="abort-description">Alle Kategorien, Fragen, Teams und Punkte dieses Spiels werden gelöscht. Du kehrst zur Startseite zurück.</p><div class="actions"><button type="button" id="keep-playing" class="quiet" autofocus>Weiterspielen</button><button type="button" id="confirm-abort" class="danger">Ja, Spiel abbrechen</button></div></dialog><div id="notice" role="status" aria-live="polite"></div><script>function answerPoints(value, correct) {
   return correct ? value : -value / 2;
 }
 
@@ -22,6 +22,27 @@ function skipBoard(state) {
       }
     }
   }
+}
+
+function applyTeamChanges(state, entries) {
+  if (state.phase !== 'game' || state.categories.some(c => c.questions.some(q => !q.used))) throw new Error('Teams können erst nach Abschluss des Boards geändert werden.');
+  if (entries.length < 2) throw new Error('Mindestens zwei Teams müssen im Spiel bleiben.');
+  const names = entries.map(t => t.name.trim());
+  if (names.some(name => !name)) throw new Error('Bitte für jedes Team einen Namen eingeben.');
+  if (new Set(names.map(name => name.toLowerCase())).size !== names.length) throw new Error('Teamnamen müssen eindeutig sein.');
+  const sources = entries.filter(t => t.source !== undefined).map(t => t.source);
+  if (new Set(sources).size !== sources.length || sources.some(i => !Number.isInteger(i) || !state.teams[i])) throw new Error('Ungültige Teamzuordnung. Bitte die Teamverwaltung erneut öffnen.');
+  const teams = entries.map((t,i) => ({name:names[i],score:t.source === undefined ? 0 : state.teams[t.source].score}));
+  let turn = 0;
+  for (let offset = 0; offset < state.teams.length; offset++) {
+    const next = ((state.turn || 0) + offset) % state.teams.length;
+    const index = entries.findIndex(t => t.source === next);
+    if (index !== -1) { turn = index; break; }
+  }
+  const changed = entries.length !== state.teams.length || entries.some((t,i) => t.source !== i || names[i] !== state.teams[i].name);
+  if (changed) state.history = [];
+  state.teams = teams;
+  state.turn = turn;
 }
 
 function correctionDelta(score, input, mode) {
@@ -122,9 +143,9 @@ Antwort: Paris</pre><label>Vollständiger Quiztext<textarea id="quiz-text" rows=
  else if(state.phase==='winner')renderWinner();
  else renderGame();
 }
-function renderGame(){const left=state.categories.flatMap(c=>c.questions).filter(q=>!q.used).length;app.innerHTML=`<div class="eyebrow">BOARD ${state.round} · ${factor()===2?"DOPPELTE PUNKTE":"DIE BÜHNE GEHÖRT EUCH"}</div><h1>${left?'Wählt eure nächste Herausforderung.':'Board abgeschlossen!'}</h1><p>${left?`${left} von 25 Fragen offen · Bedienung durch eine Spielleitung`:'Board abgeschlossen · Endstand unten'}</p>${left?`<p class="turn-indicator">Am Zug: <strong>${esc(state.teams[state.turn].name)}</strong> <span>· Team bei jeder Frage änderbar</span></p>`:''}<div class="board">${state.categories.map(c=>`<div class="heading">${esc(c.name)}</div>`).join('')}${Array.from({length:5},(_,j)=>state.categories.map((c,i)=>`<button class="tile" data-open="${i},${j}" ${c.questions[j].used?'disabled':''} aria-label="${esc(c.name)}, ${(j+1)*100*factor()} Punkte">${c.questions[j].used?(c.questions[j].skipped?'–':'✓'):(j+1)*100*factor()}</button>`).join('')).join('')}</div>${left?'<div class="actions"><button type="button" id="skip-board" class="quiet">Board überspringen (Test)</button><span class="hint">Schließt alle offenen Fragen ohne Punktevergabe.</span></div>':''}${left?'':'<section class="panel"><h2>Wie geht es weiter?</h2><p>Mit neuen Fragen weiterspielen oder jetzt den Sieger küren.</p><div class="actions"><button id="new-board">Neues Board vorbereiten →</button><button id="finish">Spiel beenden & Sieger anzeigen</button></div></section>'}<h2>Teams & Punktestand</h2><p class="hint">Richtig: Punkte dazu. Falsch: die Hälfte der Punkte abziehen. Manuelle Korrektur: z. B. 100 oder −100 eingeben.</p><div class="teams">${state.teams.map((t,i)=>`<section class="scorecard ${i===state.turn?'current-team':''}"><strong>${esc(t.name)}</strong><div class="score">${t.score} <small>Pkt.</small></div><form data-score="${i}" novalidate><label>Korrekturart<select name="mode" aria-label="Korrekturart für ${esc(t.name)}"><option value="add">Punkte hinzufügen (+/−)</option><option value="subtract">Punkte abziehen</option><option value="set">Punktestand setzen</option></select></label><label>Punkte<input type="text" name="amount" required placeholder="z. B. 100 oder −100" aria-label="Punktekorrektur für ${esc(t.name)}"></label><button type="button" data-apply-score="${i}">Übernehmen</button><span class="score-error" role="alert"></span></form></section>`).join('')}</div><div class="actions"><button id="undo" class="quiet" ${state.history.length?'':'disabled'}>Letzte Änderung rückgängig</button></div><details><summary>Punkteverlauf</summary><div class="history">${state.history.slice().reverse().map(h=>`<div>${esc(h.label)}</div>`).join('')||'Noch keine Änderungen.'}</div></details>`}
+function renderGame(){const left=state.categories.flatMap(c=>c.questions).filter(q=>!q.used).length;app.innerHTML=`<div class="eyebrow">BOARD ${state.round} · ${factor()===2?"DOPPELTE PUNKTE":"DIE BÜHNE GEHÖRT EUCH"}</div><h1>${left?'Wählt eure nächste Herausforderung.':'Board abgeschlossen!'}</h1><p>${left?`${left} von 25 Fragen offen · Bedienung durch eine Spielleitung`:'Board abgeschlossen · Endstand unten'}</p>${left?`<p class="turn-indicator">Am Zug: <strong>${esc(state.teams[state.turn].name)}</strong> <span>· Team bei jeder Frage änderbar</span></p>`:''}<div class="board">${state.categories.map(c=>`<div class="heading">${esc(c.name)}</div>`).join('')}${Array.from({length:5},(_,j)=>state.categories.map((c,i)=>`<button class="tile" data-open="${i},${j}" ${c.questions[j].used?'disabled':''} aria-label="${esc(c.name)}, ${(j+1)*100*factor()} Punkte">${c.questions[j].used?(c.questions[j].skipped?'–':'✓'):(j+1)*100*factor()}</button>`).join('')).join('')}</div>${left?'<div class="actions"><button type="button" id="skip-board" class="quiet">Board überspringen (Test)</button><span class="hint">Schließt alle offenen Fragen ohne Punktevergabe.</span></div>':''}${left?'':'<section class="panel"><h2>Wie geht es weiter?</h2><p>Mit neuen Fragen weiterspielen oder jetzt den Sieger küren.</p><div class="actions"><button id="new-board">Neues Board vorbereiten →</button><button id="finish">Spiel beenden & Sieger anzeigen</button><button id="manage-teams" class="quiet">Teams verwalten</button></div></section>'}<h2>Teams & Punktestand</h2><p class="hint">Richtig: Punkte dazu. Falsch: die Hälfte der Punkte abziehen. Manuelle Korrektur: z. B. 100 oder −100 eingeben.</p><div class="teams">${state.teams.map((t,i)=>`<section class="scorecard ${i===state.turn?'current-team':''}"><strong>${esc(t.name)}</strong><div class="score">${t.score} <small>Pkt.</small></div><form data-score="${i}" novalidate><label>Korrekturart<select name="mode" aria-label="Korrekturart für ${esc(t.name)}"><option value="add">Punkte hinzufügen (+/−)</option><option value="subtract">Punkte abziehen</option><option value="set">Punktestand setzen</option></select></label><label>Punkte<input type="text" name="amount" required placeholder="z. B. 100 oder −100" aria-label="Punktekorrektur für ${esc(t.name)}"></label><button type="button" data-apply-score="${i}">Übernehmen</button><span class="score-error" role="alert"></span></form></section>`).join('')}</div><div class="actions"><button id="undo" class="quiet" ${state.history.length?'':'disabled'}>Letzte Änderung rückgängig</button></div><details><summary>Punkteverlauf</summary><div class="history">${state.history.slice().reverse().map(h=>`<div>${esc(h.label)}</div>`).join('')||'Noch keine Änderungen.'}</div></details>`}
 app.addEventListener('input',e=>{const d=e.target.dataset;if(d.cat!==undefined)state.categories[+d.cat].name=e.target.value;if(d.field)state.categories[+d.c].questions[+d.q][d.field]=e.target.value;if(d.team!==undefined)state.teams[+d.team].name=e.target.value;save()});
-app.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.applyScore!==undefined){applyCorrection(b.closest('form'));return}if(b.id==='skip-board'){skipBoard(state);save();render();return}if(b.id==='new-board'){nextRound(state);save();render();return}if(b.id==='finish'){state.phase='winner';save();render();return}if(b.id==='return-board'){state.phase='game';save();render();return}if(b.id==='template'){downloadTemplate();return}if(b.id==='import-text'){importQuiz(document.querySelector('#quiz-text').value);return}if(d.open){openQuestion(...d.open.split(',').map(Number));return}if(d.remove!==undefined)state.teams.splice(+d.remove,1);else if(b.id==='add')state.teams.push({name:`Team ${state.teams.length+1}`,score:0});else if(b.id==='back')state.phase='questions';else if(b.id==='next'){const error=validateSetup(state.categories,[{name:'A'},{name:'B'}]);if(error)return notify(error);state.phase=state.round>1?'game':'teams'}else if(b.id==='start'){const error=validateSetup(state.categories,state.teams);if(error)return notify(error);state.phase='game'}else if(b.id==='undo'){const h=state.history.pop();if(h){state.teams[h.team].score=h.previous;if(Number.isInteger(h.previousTurn))state.turn=h.previousTurn;if(h.question)state.categories[h.question[0]].questions[h.question[1]].used=false}}else return;save();render()});
+app.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const d=b.dataset;if(d.applyScore!==undefined){applyCorrection(b.closest('form'));return}if(b.id==='manage-teams'){openTeamManager();return}if(b.id==='skip-board'){skipBoard(state);save();render();return}if(b.id==='new-board'){nextRound(state);save();render();return}if(b.id==='finish'){state.phase='winner';save();render();return}if(b.id==='return-board'){state.phase='game';save();render();return}if(b.id==='template'){downloadTemplate();return}if(b.id==='import-text'){importQuiz(document.querySelector('#quiz-text').value);return}if(d.open){openQuestion(...d.open.split(',').map(Number));return}if(d.remove!==undefined)state.teams.splice(+d.remove,1);else if(b.id==='add')state.teams.push({name:`Team ${state.teams.length+1}`,score:0});else if(b.id==='back')state.phase='questions';else if(b.id==='next'){const error=validateSetup(state.categories,[{name:'A'},{name:'B'}]);if(error)return notify(error);state.phase=state.round>1?'game':'teams'}else if(b.id==='start'){const error=validateSetup(state.categories,state.teams);if(error)return notify(error);state.phase='game'}else if(b.id==='undo'){const h=state.history.pop();if(h){state.teams[h.team].score=h.previous;if(Number.isInteger(h.previousTurn))state.turn=h.previousTurn;if(h.question)state.categories[h.question[0]].questions[h.question[1]].used=false}}else return;save();render()});
 app.addEventListener('submit',e=>{
  e.preventDefault();
  if(e.target.dataset.score!==undefined)applyCorrection(e.target);
@@ -160,12 +181,38 @@ function renderWinner(){
 }
 
 function openQuestion(i,j){const q=state.categories[i].questions[j];dialog.innerHTML=`<div class="eyebrow">${esc(state.categories[i].name)} · ${(j+1)*100*factor()} PUNKTE</div><h2>${esc(q.text)}</h2><button id="reveal" class="quiet">Lösung anzeigen</button><p class="answer" hidden>${esc(q.answer)}</p><label style="margin-top:24px">Antwortendes Team<select id="answer-team"><option value="">Bitte Team wählen</option>${state.teams.map((t,k)=>`<option value="${k}" ${k===state.turn?'selected':''}>${esc(t.name)} (${t.score} Pkt.)</option>`).join('')}</select></label><div class="actions"><button id="correct">✓ Richtig · +${(j+1)*100*factor()}</button><button id="wrong" class="danger">✕ Falsch · −${(j+1)*50*factor()}</button></div><p class="hint">Die Teamreihenfolge läuft nach jeder Bewertung weiter. Eine andere Teamauswahl gilt nur für diese Frage. Die Bewertung schließt diese Frage ab. Bei Bedarf die letzte Änderung anschließend rückgängig machen.</p><button id="close" class="quiet">Zurück ohne Bewertung</button><button type="button" id="abort-question" class="quiet">Spiel abbrechen</button>`;dialog.querySelector('#abort-question').onclick=requestAbort;dialog.querySelector('#reveal').onclick=()=>{dialog.querySelector('.answer').hidden=false;dialog.querySelector('#reveal').hidden=true};dialog.querySelector('#close').onclick=()=>dialog.close();for(const [id,sign]of [['correct',1],['wrong',-1]])dialog.querySelector('#'+id).onclick=()=>{const selected=dialog.querySelector('select').value;if(selected==='')return notify('Bitte zuerst ein Team auswählen.');if(q.used)return;const team=+selected,delta=answerPoints((j+1)*100*factor(),sign===1),previous=state.teams[team].score,previousTurn=state.turn;adjustScore(state.teams[team],delta);q.used=true;state.turn=advanceTurn(state.turn,state.teams.length);state.history.push({team,previous,previousTurn,question:[i,j],label:`${state.teams[team].name}: ${delta>0?'+':''}${delta} Punkte · ${state.categories[i].name}`});save();dialog.close();render()};dialog.showModal()}
+const teamDialog=document.querySelector('#team-manager');
+let teamDraft=[];
+function openTeamManager(){
+ teamDraft=state.teams.map((t,source)=>({...t,source}));
+ renderTeamManager();teamDialog.showModal();
+}
+function renderTeamManager(){
+ teamDialog.innerHTML=`<h2 id="team-manager-title">Teams für den weiteren Spielverlauf</h2><p>Verbleibende Teams behalten ihre Punkte. Neue Teams starten mit 0 Punkten und werden hinten eingereiht. Entfernte Teams nehmen nicht mehr an der Siegerwertung teil.</p><p class="hint">Beim Speichern einer Teamänderung wird der bisherige Rückgängig-Verlauf abgeschlossen. Mindestens zwei Teams müssen bleiben.</p><div class="teams">${teamDraft.map((t,i)=>`<section class="panel"><label>Teamname<input data-roster-name="${i}" maxlength="60" value="${esc(t.name)}"></label><p>${t.score} Punkte${t.source===undefined?' · Neues Team':''}</p><button type="button" class="quiet" data-roster-remove="${i}" ${teamDraft.length<=2?'disabled':''}>Team entfernen</button></section>`).join('')}</div><p id="team-manager-error" role="alert" style="color:#ffb8c3"></p><div class="actions"><button type="button" id="roster-add" class="quiet">+ Team hinzufügen</button><button type="button" id="roster-cancel" class="quiet">Abbrechen</button><button type="button" id="roster-save">Änderungen speichern</button></div>`;
+}
+teamDialog.addEventListener('input',e=>{
+ if(e.target.dataset.rosterName!==undefined)teamDraft[Number(e.target.dataset.rosterName)].name=e.target.value;
+});
+teamDialog.addEventListener('click',e=>{
+ const button=e.target.closest('button');if(!button)return;
+ if(button.id==='roster-cancel'){teamDialog.close();return}
+ if(button.id==='roster-add'){
+  let n=1;while(teamDraft.some(t=>t.name.trim().toLowerCase()===`team ${n}`))n++;
+  teamDraft.push({name:`Team ${n}`,score:0});renderTeamManager();return;
+ }
+ if(button.dataset.rosterRemove!==undefined&&teamDraft.length>2){teamDraft.splice(Number(button.dataset.rosterRemove),1);renderTeamManager();return}
+ if(button.id==='roster-save'){
+  try{applyTeamChanges(state,teamDraft);save();teamDialog.close();render();notify('Teams aktualisiert. Die Punkte der verbleibenden Teams bleiben erhalten.')}
+  catch(err){teamDialog.querySelector('#team-manager-error').textContent=err.message}
+ }
+});
 const abortDialog=document.querySelector('#abort-game');
 function requestAbort(){if(!abortDialog.open)abortDialog.showModal()}
 document.querySelector('#reset').onclick=requestAbort;
 document.querySelector('#keep-playing').onclick=()=>abortDialog.close();
 document.querySelector('#confirm-abort').onclick=()=>{
  if(dialog.open)dialog.close();
+ if(teamDialog.open)teamDialog.close();
  abortDialog.close();
  state=fresh();save();render();
  window.scrollTo({top:0,behavior:'instant'});
