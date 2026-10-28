@@ -1,5 +1,9 @@
 # Quizabend
 
+## Online-Multiplayer-Kopie
+
+Die separate [Multiplayer-Version ohne Spielleitung](multiplayer/README.md) liegt unter `multiplayer/`. Alle spielen mit: Spielräume mit Raumcode, Live-Anzeige, reihum Fragen wählen und automatisch geprüfte Antworten ohne Beachtung der Groß-/Kleinschreibung. Start mit `cd multiplayer` und `npm start` (Node.js ab Version 20). Für Internetzugriff muss der Server auf einem öffentlich erreichbaren Hostingdienst laufen; GitHub Pages allein genügt nicht. Die bisherigen Offline-Dateien bleiben erhalten.
+
 ## Direkt herunterladen
 
 - [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.11.html)
