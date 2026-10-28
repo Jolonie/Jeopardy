@@ -2,7 +2,7 @@
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.10.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.11.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -88,3 +88,8 @@ Das für die dunkle Oberfläche freigestellte Logo liegt in `assets/cafe-canape-
 ## Version 1.10
 
 Die eigene Logo-Auswahl samt Exportoberfläche wurde entfernt. Alte lokal gespeicherte Logos werden nicht mehr geladen; das fest eingebundene Logo wird immer angezeigt. Die Download-Datei enthält das Logo weiterhin offline.
+
+
+## Version 1.11: Punktefaktor
+
+In der Fragenvorbereitung für jedes Board 0,5×, 1×, 2× oder 3× wählen. Die Stufen ergeben 50–250, 100–500, 200–1.000 oder 300–1.500 Punkte. Falsche Antworten kosten weiterhin die Hälfte. TXT-Dateien behalten immer die Basiswerte 100–500. Bei neuen Boards bleibt der zuletzt gewählte Faktor voreingestellt; alte Spielstände behalten ihren bisherigen Faktor.
