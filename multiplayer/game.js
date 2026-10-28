@@ -2,11 +2,69 @@ export function answerPoints(value, correct) {
   return correct ? value : -value / 2;
 }
 
-export function checkAnswer(input, solution) {
-  const normalize=text=>String(text).normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('de-DE');
-  const answer=normalize(input);
-  return Boolean(answer)&&String(solution).split('|').some(alias=>normalize(alias)===answer);
+// Articles are optional; typo tolerance is spelling-based, not semantic.
+function normalizeAnswer(text) {
+  return String(text).normalize('NFKC').toLocaleLowerCase('de-DE')
+    .replace(/ä/g,'ae').replace(/ö/g,'oe').replace(/ü/g,'ue').replace(/ß/g,'ss')
+    .replace(/[^\p{L}\p{N}]+/gu,' ').trim()
+    .replace(/^(?:der|die|das|den|dem|des|ein|eine|einen|einem|einer|eines|the|a|an)\s+/u,'')
+    .replace(/(\p{L}{4,})\s*(?:skala|einheit(?:en)?)$/u,'$1').trim();
 }
+function spellingDistance(a,b) {
+  const rows=Array.from({length:a.length+1},()=>Array(b.length+1).fill(0));
+  for(let i=0;i<=a.length;i++)rows[i][0]=i;
+  for(let j=0;j<=b.length;j++)rows[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++){
+    rows[i][j]=Math.min(rows[i-1][j]+1,rows[i][j-1]+1,rows[i-1][j-1]+(a[i-1]===b[j-1]?0:1));
+    if(i>1&&j>1&&a[i-1]===b[j-2]&&a[i-2]===b[j-1])rows[i][j]=Math.min(rows[i][j],rows[i-2][j-2]+1);
+  }
+  return rows[a.length][b.length];
+}
+function answerItems(text) {
+  // A comma between digits remains part of a decimal number.
+  return String(text).split(/(?<!\d),|,(?!\d)|;|\s+(?:und|and)\s+|\s*&\s*/iu)
+    .map(item=>item.trim()).filter(Boolean);
+}
+function matchAnswerItems(actual, expected) {
+  if(actual.length!==expected.length||actual.length>50)return false;
+  const matches=actual.map(item=>expected.map(solution=>checkAnswer(item,solution)));
+  const assigned=Array(expected.length).fill(-1);
+  function assign(i,visited) {
+    for(let j=0;j<expected.length;j++){
+      if(!matches[i][j]||visited.has(j))continue;
+      visited.add(j);
+      if(assigned[j]===-1||assign(assigned[j],visited)){assigned[j]=i;return true;}
+    }
+    return false;
+  }
+  return actual.every((_,i)=>assign(i,new Set()));
+}
+export function checkAnswer(input, solution) {
+  const answer=normalizeAnswer(input);
+  if(!answer)return false;
+  return String(solution).split('|').some(alias=>{
+    const actualItems=answerItems(input),expectedItems=answerItems(alias);
+    if(actualItems.length>1||expectedItems.length>1)return matchAnswerItems(actualItems,expectedItems);
+    const expected=normalizeAnswer(alias);
+    if(!expected)return false;
+    if(answer.replace(/\s/gu,'')===expected.replace(/\s/gu,''))return true;
+    const actualWords=answer.split(' '),expectedWords=expected.split(' ');
+    if(actualWords.length!==expectedWords.length)return false;
+    let errors=0;
+    for(let i=0;i<actualWords.length;i++){
+      const a=actualWords[i],b=expectedWords[i];if(a===b)continue;
+      const length=Math.max(a.length,b.length);
+      if(Math.min(a.length,b.length)<4||/\d/u.test(a+b))return false;
+      const limit=length>=9?2:1;
+      if(Math.abs(a.length-b.length)>limit||length>100)return false;
+      const distance=spellingDistance(a,b);
+      if(distance>limit)return false;
+      errors+=distance;
+    }
+    return errors<=Math.min(3,Math.max(1,Math.floor(expected.length*0.15)));
+  });
+}
+
 
 export function advanceTurn(current, teamCount) {
   return (current + 1) % teamCount;

@@ -1,0 +1,20 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import vm from 'node:vm';
+test('standalone download embeds tolerant matching and working automatic score/undo history',()=>{
+ const html=readFileSync(new URL('../download/Quizabend-v1.12.html',import.meta.url),'utf8');
+ const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];new vm.Script(script);
+ assert.ok(!html.includes('src="app.js"'));assert.ok(html.includes('data:image/png;base64,'));
+ const game=script.slice(0,script.indexOf("const key='quizabend-v1'"));
+ const source=readFileSync(new URL('../app.js',import.meta.url),'utf8');
+ const open=source.slice(source.indexOf('function openQuestion('),source.indexOf('\n',source.indexOf('function openQuestion(')));
+ const nodes=new Map();
+ const dialog={innerHTML:'',querySelector(id){if(!nodes.has(id))nodes.set(id,{value:id==='select'?'0':id==='#auto-answer'?'Renaisance':'',click(){this.onclick()}});return nodes.get(id)},showModal(){},close(){}};
+ const state={categories:[{name:'Geschichte',questions:[{text:'Epoche?',answer:'Renaissance',used:false}]}],teams:[{name:'A',score:0},{name:'B',score:0}],turn:0,history:[]};
+ const ctx=vm.createContext({state,dialog,esc:String,factor:()=>1,requestAbort(){},notify(message){throw Error(message)},save(){},render(){}});
+ vm.runInContext(game+'\n'+open+'\nopenQuestion(0,0);',ctx);
+ dialog.querySelector('#auto-answer-form').onsubmit({preventDefault(){}});
+ assert.equal(state.teams[0].score,100);assert.equal(state.turn,1);assert.equal(state.history[0].previous,0);assert.equal(state.categories[0].questions[0].used,true);
+ assert.equal(vm.runInContext("checkAnswer('Scoville und NewYork','New York, Scoville-Skala')",ctx),true);
+});

@@ -6,7 +6,7 @@ Die separate [Multiplayer-Version ohne Spielleitung](multiplayer/README.md) lieg
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.11.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.12.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -97,3 +97,16 @@ Die eigene Logo-Auswahl samt Exportoberfläche wurde entfernt. Alte lokal gespei
 ## Version 1.11: Punktefaktor
 
 In der Fragenvorbereitung für jedes Board 0,5×, 1×, 2× oder 3× wählen. Die Stufen ergeben 50–250, 100–500, 200–1.000 oder 300–1.500 Punkte. Falsche Antworten kosten weiterhin die Hälfte. TXT-Dateien behalten immer die Basiswerte 100–500. Bei neuen Boards bleibt der zuletzt gewählte Faktor voreingestellt; alte Spielstände behalten ihren bisherigen Faktor.
+
+
+## Version 1.12: Tolerante automatische Antwortprüfung
+
+Im Fragendialog optional die Teamantwort eingeben und „Automatisch prüfen & werten“ wählen. Die manuelle Bewertung mit „Richtig/Falsch“ bleibt verfügbar; Undo und die Punktekorrektur funktionieren wie bisher. Die vollständige Antwortprüfung funktioniert ohne Internet und ist auch im lokalen Multiplayer sowie im Windows-ZIP enthalten.
+
+- Artikel optional, Groß-/Kleinschreibung und Leerzeichen werden ignoriert.
+- Kleine Tippfehler, Buchstabendreher und Umlautvarianten wie München/Muenchen werden akzeptiert. Kurze Wörter und Zahlen werden strenger geprüft.
+- Zusätze wie „-Skala“ oder „-Einheiten“ sind optional: Scoville = Scoville-Skala = Scoville-Einheiten.
+- Aufzählungen dürfen beliebig sortiert sein, mit Komma, „und“, Semikolon oder & als Trennzeichen. Alle Bestandteile sind erforderlich; doppelte Einträge ersetzen keine fehlenden.
+- Weitere zulässige Lösungen mit `|` trennen. Die Prüfung erkennt Schreibvarianten, keine beliebigen Synonyme.
+
+Aktueller Download: `download/Quizabend-v1.12.html`. Bereits heruntergeladene Dateien bitte ersetzen; der vorhandene lokale Spielstand bleibt beim selben Browser erhalten.
