@@ -1,0 +1,31 @@
+CAFE CANAPE - QUIZABEND MULTIPLAYER
+=================================
+
+1. Die komplette ZIP-Datei entpacken. Nicht direkt aus dem ZIP starten.
+2. Falls noch nicht vorhanden: Node.js LTS von https://nodejs.org installieren.
+   Version 20 oder neuer ist erforderlich. Keine npm-Installation notwendig.
+3. Im entpackten Ordner multiplayer die Datei STARTEN.bat doppelt anklicken.
+4. Der Browser oeffnet sich automatisch, sobald der Server bereit ist.
+   Das schwarze Serverfenster bleibt waehrend des Spiels geoeffnet.
+5. Andere Geraete im gleichen WLAN oeffnen eine der im Fenster angezeigten
+   Netzwerkadressen. Fuer passende Einladungslinks auch am Servercomputer
+   diese Netzwerkadresse verwenden. Windows-Firewall: privates Netzwerk zulassen.
+6. Eigenen Teamnamen eingeben und Raum erstellen, dann Raumcode teilen.
+   Alle sind Mitspieler; es gibt keine Spielleitung.
+7. TXT-Fragen laden, Punktefaktor waehlen und mit mindestens zwei Teams starten.
+
+BEISPIEL-FRAGEN.txt enthaelt 25 fertige Testfragen.
+FRAGEN-VORLAGE.txt ist die Vorlage fuer eigene Fragen.
+Antworten werden automatisch ohne Beachtung der Gross-/Kleinschreibung geprueft.
+Mehrere erlaubte Antworten in einer Zeile mit | trennen.
+Richtig: voller Fragewert. Falsch oder Passen: halber Wert als Abzug.
+
+Server beenden: Strg+C im Serverfenster.
+Spielstaende und Zugangsbindungen stehen im automatisch angelegten Ordner data.
+Fuer Wiederaufnahme denselben Computer, Port und Browser verwenden.
+Den Ordner data nicht an andere Personen weitergeben.
+
+Das Starten auf einem PC stellt das Spiel im lokalen Netzwerk bereit.
+Fuer Spieler ausserhalb dieses Netzwerks wird ein oeffentlich erreichbarer
+Node-Server mit HTTPS benoetigt. Eine ZIP-Datei oder GitHub Pages allein
+stellt keinen solchen Internetserver bereit. Details stehen in README.md.

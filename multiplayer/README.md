@@ -1,5 +1,9 @@
 # Café Canapé · Online-Multiplayer ohne Spielleitung
 
+## Windows-Komplettpaket
+
+Die [ZIP-Datei herunterladen](../download/Quizabend-Multiplayer-Windows.zip), vollständig entpacken und im enthaltenen Ordner `multiplayer` auf `STARTEN.bat` doppelklicken. Benötigt einmalig Node.js LTS ab Version 20; zusätzliche npm-Pakete sind nicht nötig. Der Browser öffnet sich nach erfolgreichem Serverstart. Im Serverfenster stehen die Netzwerkadressen für andere Geräte im selben WLAN. Fertige Beispielfragen und eine Fragenvorlage liegen direkt im Ordner. `ANLEITUNG.txt` erklärt den Start. Die BAT startet einen lokalen Server, kein öffentliches Internet-Hosting.
+
 Separate Kopie der Offline-Anwendung. Alle sind Mitspieler. Bis zu 100 Teams treten mit eigenen Geräten per Raumcode bei (mindestens zwei für den Start). Das Team am Zug wählt eine Frage und gibt eine Antwort ein. Der Server bewertet sie automatisch und schaltet weiter. Es gibt keine Spielleitungsrolle.
 
 ## Start
