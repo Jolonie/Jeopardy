@@ -6,7 +6,7 @@ Die separate [Multiplayer-Version ohne Spielleitung](multiplayer/README.md) lieg
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.12.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.13.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -110,3 +110,11 @@ Im Fragendialog optional die Teamantwort eingeben und „Automatisch prüfen & w
 - Weitere zulässige Lösungen mit `|` trennen. Die Prüfung erkennt Schreibvarianten, keine beliebigen Synonyme.
 
 Aktueller Download: `download/Quizabend-v1.12.html`. Bereits heruntergeladene Dateien bitte ersetzen; der vorhandene lokale Spielstand bleibt beim selben Browser erhalten.
+
+## Version 1.13: Bildfragen offline
+
+Für eine Bildfrage im Fragenfeld oder im TXT-Import nur `x` eintragen. In der Fragenvorbereitung erscheint anschließend ein Upload für PNG, JPG, GIF oder WebP bis 5 MB. Das Spiel kann erst fortgesetzt werden, wenn jede mit `x` markierte Frage ein Bild besitzt. Die Bilder werden lokal im Browser gespeichert und beim Öffnen der Frage angezeigt; eine Internetverbindung ist nicht erforderlich.
+
+Die lokale Multiplayer-Version und das Windows-Paket unterstützen dieselbe `Frage: x`-Syntax. Dort speichert der lokale Node-Server die Bilder im privaten Datenverzeichnis und liefert sie erst aus, wenn die betreffende Frage geöffnet ist.
+
+Aktueller Download: `download/Quizabend-v1.13.html`.

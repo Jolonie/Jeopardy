@@ -44,3 +44,17 @@ test('Zugänge, ungültige Namen, private Daten und Wiederherstellung nach Neust
  assert.equal((await fetch(base+'/data/rooms.json')).status,404);
  const second=await start(t,file);assert.equal((await call(second,`/api/rooms/${r.code}`,null,r.creator.cookie)).body.teams[1].name,'Team A');assert.equal((await call(second,`/api/rooms/${r.code}`,null,p.cookie)).body.role,'player');
 });
+test('Bildfragen benötigen einen Upload und zeigen das Bild nur bei geöffneter Frage',async t=>{
+ const dir=mkdtempSync(join(tmpdir(),'quiz-images-'));t.after(()=>rmSync(dir,{recursive:true,force:true}));const base=await start(t,join(dir,'rooms.json')),r=await room(base);await r.join('Team 2');
+ const text=quizTemplate().replace('Frage: Hier Frage 1 eingeben','Frage: x');
+ let state=(await r.get()).body;
+ assert.equal((await r.post({type:'board',text,multiplier:1,images:{},version:state.version})).status,400);
+ assert.equal((await fetch(`${base}/api/rooms/${r.code}/question-image?slot=0-0`,{method:'POST',headers:{cookie:r.creator.cookie,'Content-Type':'image/png'},body:new Uint8Array([1,2,3])})).status,400);
+ const upload=await fetch(`${base}/api/rooms/${r.code}/question-image?slot=0-0`,{method:'POST',headers:{cookie:r.creator.cookie,'Content-Type':'image/png'},body:new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])});assert.equal(upload.status,201);const {key}=await upload.json();
+ state=(await r.get()).body;assert.equal((await r.post({type:'board',text,multiplier:1,images:{'0-0':key},version:state.version})).status,200);
+ state=(await r.get()).body;assert.equal((await r.post({type:'start',version:state.version})).status,200);
+ state=(await r.get()).body;assert.equal((await r.post({type:'open',c:0,q:0,version:state.version})).status,200);
+ state=(await r.get()).body;assert.equal(state.active.image,true);assert.equal(state.active.text,'');assert.ok(!JSON.stringify(state).includes(key));
+ const image=await fetch(`${base}/api/rooms/${r.code}/question-image?c=0&q=0`,{headers:{cookie:r.creator.cookie}});assert.equal(image.status,200);assert.equal(image.headers.get('content-type'),'image/png');
+ assert.equal((await fetch(`${base}/api/rooms/${r.code}/question-image?c=0&q=1`,{headers:{cookie:r.creator.cookie}})).status,403);
+});

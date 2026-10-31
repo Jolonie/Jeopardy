@@ -10,13 +10,15 @@ const token=()=>randomBytes(24).toString('hex');
 const fail=(message,status=400)=>{throw Object.assign(new Error(message),{status})};
 const nameOf=value=>{if(typeof value!=='string'||!value.trim()||value.trim().length>60)fail('Bitte einen Teamnamen mit 1–60 Zeichen eingeben.');return value.trim()};
 const complete=r=>r.categories.length===5&&r.categories.every(c=>c.questions.every(q=>q.used));
+function imageType(bytes){if(bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a)return['image/png','png'];if(bytes.length>=3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff)return['image/jpeg','jpg'];if(bytes.length>=6&&bytes.subarray(0,6).toString().match(/^GIF8[79]a$/))return['image/gif','gif'];if(bytes.length>=12&&bytes.subarray(0,4).toString()==='RIFF'&&bytes.subarray(8,12).toString()==='WEBP')return['image/webp','webp'];return null}
 
 export function createApp({dataFile=join(root,'data','rooms.json')}={}){
  const rooms=new Map();const listeners=new Map();const rates=new Map();
+ const imageDir=dataFile?join(dirname(dataFile),'question-images'):null;
  if(dataFile&&existsSync(dataFile))for(const room of JSON.parse(readFileSync(dataFile,'utf8')))if(Date.now()-room.updated<86400000)rooms.set(room.code,room);
  function persist(){if(!dataFile)return;mkdirSync(dirname(dataFile),{recursive:true});writeFileSync(dataFile+'.tmp',JSON.stringify([...rooms.values()]),{mode:0o600});renameSync(dataFile+'.tmp',dataFile)}
  function snapshot(r,s){
-  const active=r.active?{c:r.active.c,q:r.active.q,team:r.active.team,text:r.categories[r.active.c].questions[r.active.q].text}:null;
+  const active=r.active?{c:r.active.c,q:r.active.q,team:r.active.team,text:r.categories[r.active.c].questions[r.active.q].imageKey?'':r.categories[r.active.c].questions[r.active.q].text,image:Boolean(r.categories[r.active.c].questions[r.active.q].imageKey)}:null;
   return {code:r.code,role:'player',teamId:s.team,version:r.version,phase:r.phase,round:r.round,multiplier:r.multiplier,turn:r.turn,teams:r.teams,categories:r.categories.map(c=>({name:c.name,questions:c.questions.map(q=>({used:q.used,skipped:q.skipped}))})),active,lastResult:r.lastResult||null,ranking:standings(r.teams)};
  }
  function broadcast(r){for(const peer of listeners.get(r.code)||[]){if(!r.sessions.includes(peer.session)){peer.res.end();listeners.get(r.code).delete(peer);continue}peer.res.write(`data: ${JSON.stringify(snapshot(r,peer.session))}\n\n`)}}
@@ -39,9 +41,9 @@ export function createApp({dataFile=join(root,'data','rooms.json')}={}){
     if(r.active||!(r.phase==='lobby'||r.phase==='setup'||complete(r)))fail('Zuerst das aktuelle Board abschließen.');
     if(typeof b.text!=='string'||b.text.length>200000)fail('Bitte einen vollständigen Quiztext eingeben.');
     if(![0.5,1,2,3].includes(b.multiplier))fail('Ungültiger Punktefaktor.');
-    const categories=parseQuiz(b.text);r.categories=categories;r.multiplier=b.multiplier;r.phase='lobby';r.history=[];r.lastResult=null;break;
+    const categories=parseQuiz(b.text);for(let c=0;c<categories.length;c++)for(let q=0;q<categories[c].questions.length;q++)if(categories[c].questions[q].text.trim().toLocaleLowerCase('de-DE')==='x'){const slot=`${c}-${q}`,key=b.images?.[slot],prefix=`${r.code}-${r.round}-${slot}-`;if(!imageDir||typeof key!=='string'||!key.startsWith(prefix)||key.includes('/')||!existsSync(join(imageDir,key)))fail(`Für die Bildfrage ${categories[c].name} · ${(q+1)*100} Punkte fehlt ein Bild.`);categories[c].questions[q].imageKey=key}r.categories=categories;r.multiplier=b.multiplier;r.phase='lobby';r.history=[];r.lastResult=null;break;
    }
-   case 'start':if(r.phase!=='lobby'||!r.categories.length)fail('Zuerst Fragen importieren.');if(r.teams.length<2)fail('Mindestens zwei Teams müssen teilnehmen.');r.phase='game';break;
+   case 'start':if(r.phase!=='lobby'||!r.categories.length)fail('Zuerst Fragen importieren.');if(r.categories.some(c=>c.questions.some(q=>q.text.trim().toLocaleLowerCase('de-DE')==='x'&&!q.imageKey)))fail('Für jede mit x markierte Bildfrage muss ein Bild hochgeladen werden.');if(r.teams.length<2)fail('Mindestens zwei Teams müssen teilnehmen.');r.phase='game';break;
    case 'open':{
     if(r.phase!=='game'||r.active||complete(r))fail('Keine Frage auswählbar.');
     if(r.teams[r.turn]?.id!==s.team)fail('Nur das Team am Zug darf eine Frage wählen.',403);
@@ -69,6 +71,8 @@ export function createApp({dataFile=join(root,'data','rooms.json')}={}){
    if(req.method==='POST'){
     if(req.headers.origin&&new URL(req.headers.origin).host!==req.headers.host)fail('Anfrage von fremder Website abgelehnt.',403);
     const ip=req.socket.remoteAddress,now=Date.now();if(rates.size>10000)rates.clear();let rate=rates.get(ip);if(!rate||now-rate.time>60000){rate={time:now,count:0};rates.set(ip,rate)}if(++rate.count>600)fail('Zu viele Anfragen. Bitte kurz warten.',429);
+    const imageMatch=/^\/api\/rooms\/([A-F0-9]{8})\/question-image$/.exec(url.pathname);
+    if(imageMatch){const r=rooms.get(imageMatch[1]);if(!r)fail('Raum nicht gefunden oder abgelaufen.',404);sessionFor(req,r);if(!(r.phase==='setup'||r.phase==='lobby'))fail('Bilder können nur bei der Boardvorbereitung hochgeladen werden.');const slot=url.searchParams.get('slot');if(!/^[0-4]-[0-4]$/.test(slot||''))fail('Ungültiges Fragenfeld.');if(!imageDir)fail('Die lokale Bildspeicherung ist nicht verfügbar.',503);const chunks=[];let size=0;for await(const chunk of req){size+=chunk.length;if(size>5242880)fail('Das Bild ist zu groß (maximal 5 MB).',413);chunks.push(chunk)}const bytes=Buffer.concat(chunks),detected=imageType(bytes);if(!detected)fail('Bitte ein PNG-, JPG-, GIF- oder WebP-Bild auswählen.');mkdirSync(imageDir,{recursive:true});const key=`${r.code}-${r.round}-${slot}-${token()}.${detected[1]}`;writeFileSync(join(imageDir,key),bytes,{mode:0o600});return json(201,{key,slot})}
     let body='';for await(const chunk of req){body+=chunk;if(Buffer.byteLength(body)>300000)fail('Datei zu groß.',413)}
     let b;try{b=JSON.parse(body)}catch{fail('Ungültige Anfrage.')}
     if(!b||typeof b!=='object'||Array.isArray(b))fail('Ungültige Anfrage.');
@@ -87,6 +91,8 @@ export function createApp({dataFile=join(root,'data','rooms.json')}={}){
     }
     const s=sessionFor(req,r);action(r,s,b);update(r);return json(200,snapshot(r,s));
    }
+   const imageMatch=/^\/api\/rooms\/([A-F0-9]{8})\/question-image$/.exec(url.pathname);
+   if(req.method==='GET'&&imageMatch){const r=rooms.get(imageMatch[1]);if(!r)fail('Raum nicht gefunden oder abgelaufen.',404);sessionFor(req,r);const c=Number(url.searchParams.get('c')),q=Number(url.searchParams.get('q'));if(!Number.isInteger(c)||!Number.isInteger(q)||r.active?.c!==c||r.active?.q!==q)fail('Dieses Bild ist zurzeit nicht sichtbar.',403);const key=r.categories[c]?.questions[q]?.imageKey;if(!key||key.includes('/')||!imageDir)fail('Für diese Frage ist kein Bild hinterlegt.',404);const file=join(imageDir,key);if(!existsSync(file))fail('Das Bild ist nicht mehr verfügbar.',404);const type=key.endsWith('.png')?'image/png':key.endsWith('.jpg')?'image/jpeg':key.endsWith('.gif')?'image/gif':'image/webp';res.writeHead(200,{'Content-Type':type,'Content-Disposition':'inline','Cache-Control':'private, no-store'});return res.end(readFileSync(file))}
    const match=/^\/api\/rooms\/([A-F0-9]{8})(\/events)?$/.exec(url.pathname);
    if(req.method==='GET'&&match){
     const r=rooms.get(match[1]);if(!r)fail('Raum nicht gefunden oder abgelaufen.',404);const s=sessionFor(req,r);

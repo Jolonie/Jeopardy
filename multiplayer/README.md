@@ -25,6 +25,10 @@ Keine Paketinstallation nötig. Der Server lauscht auf Port 3000, änderbar übe
 4. Richtige Antworten bringen den vollen Wert, falsche kosten die Hälfte. „Weiß nicht“ zählt als falsch. Alle sehen danach die Lösung und den aktualisierten Punktestand. Die nächste Runde geht an das nächste Team. Ungeöffnete Fragen und Lösungen werden nicht an andere Geräte übertragen.
 5. Nach einem abgeschlossenen Board können alle ein neues Board vorbereiten, Teams entfernen oder das Spiel mit Siegeranzeige beenden. Neue Teams treten in diesen Pausen per Raumcode bei und starten mit 0 Punkten. Bestehende Punktestände bleiben erhalten. Nach dem Start eines Boards ist kein Neubeitritt möglich.
 
+### Bildfragen
+
+Im TXT-Import bei einer Bildfrage `Frage: x` eintragen. Danach erscheint für dieses Feld ein Upload für PNG, JPG, GIF oder WebP bis 5 MB. Ohne Bild kann das Board weder gespeichert noch gestartet werden. Das Bild liegt im privaten Datenverzeichnis des lokalen Servers und wird den Teams erst bei geöffneter Frage angezeigt.
+
 Die Online-Version hat bewusst keine manuelle Punktevergabe, keine manuelle Bewertung und kein Rückgängigmachen einer Antwort. Diese Funktionen bleiben in der Offline-Version. So entscheidet im Online-Spiel für alle dieselbe automatische Prüfung. Gemeinsam nutzbare Aktionen wie Board überspringen (Test) oder Spiel abbrechen setzen vertrauensvolle Mitspieler voraus; es gibt keine Moderationsrolle. Kein Antworttimer: Bei Verbindungsabbruch kann das aktive Team nach dem Wiederverbinden fortsetzen oder passen. Andere Teams können das ganze Spiel bei Bedarf abbrechen.
 
 Das Team, das Fragen importiert, kennt zwangsläufig deren Lösungen. Für gleichberechtigtes Spielen ein vorab erstelltes Fragenpaket verwenden, ohne dessen Lösungen anzusehen. Die Software kann bereits bekanntes Wissen nicht verhindern.
