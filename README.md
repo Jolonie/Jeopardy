@@ -6,7 +6,7 @@ Die separate [Multiplayer-Version ohne Spielleitung](multiplayer/README.md) lieg
 
 ## Direkt herunterladen
 
-- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.13.html)
+- [Aktuelles Spiel als einzelne HTML-Datei](download/Quizabend-v1.14.html)
 - [TXT-Testdatei mit 25 fertigen Fragen](download/Quizabend-Test.txt)
 - [TXT-Vorlage für eigene Fragen](download/Quizabend-Vorlage.txt)
 
@@ -118,3 +118,9 @@ Für eine Bildfrage im Fragenfeld oder im TXT-Import nur `x` eintragen. In der F
 Die lokale Multiplayer-Version und das Windows-Paket unterstützen dieselbe `Frage: x`-Syntax. Dort speichert der lokale Node-Server die Bilder im privaten Datenverzeichnis und liefert sie erst aus, wenn die betreffende Frage geöffnet ist.
 
 Aktueller Download: `download/Quizabend-v1.13.html`.
+
+## Version 1.14: Optionaler Text bei Bildfragen
+
+Neben dem Bild-Upload besitzt jede mit `Frage: x` markierte Frage nun ein optionales Textfeld. Der dort eingetragene Text wird gemeinsam mit dem Bild angezeigt. In der Einzeldatei wird er lokal gespeichert; die lokale und die Online-Multiplayer-Version übertragen ihn erst mit dem vorbereiteten Board.
+
+Aktueller Download: `download/Quizabend-v1.14.html`.

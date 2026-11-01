@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import vm from 'node:vm';
 test('standalone download embeds tolerant matching and working automatic score/undo history',async()=>{
- const html=readFileSync(new URL('../download/Quizabend-v1.13.html',import.meta.url),'utf8');
+ const html=readFileSync(new URL('../download/Quizabend-v1.14.html',import.meta.url),'utf8');
  const script=html.match(/<script>([\s\S]*?)<\/script>/)[1];new vm.Script(script);
  assert.ok(!html.includes('src="app.js"'));assert.ok(html.includes('data:image/png;base64,'));
- assert.ok(html.includes('data-image-c='));assert.ok(html.includes('validateQuestionImages'));
+ assert.ok(html.includes('data-image-c='));assert.ok(html.includes('data-image-text-c='));assert.ok(html.includes('question-image-text'));assert.ok(html.includes('validateQuestionImages'));
  const game=script.slice(0,script.indexOf("const key='quizabend-v1'"));
  const source=readFileSync(new URL('../app.js',import.meta.url),'utf8');
  const openStart=source.indexOf('async function openQuestion('),open=source.slice(openStart,source.indexOf('\n',openStart));
